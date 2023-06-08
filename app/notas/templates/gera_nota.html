@@ -1,0 +1,176 @@
+{% csrf_token %}
+
+
+<table style="border: 1px solid; padding: 5px; border-collapse:collapse;" cellspacing="0">
+    <tr>
+        <td colspan="2">Laboratório de Prótese Dentária </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td colspan="2" style="border: 1px solid; text-align: center;">EMISSÃO {{ hoje|date:"d/m/Y" }}</td>
+    </tr>
+    <tr>
+        <td colspan="2">CNPJ: 22.383.698/0001-04 </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td colspan="2" style="border: 1px solid; border-bottom: 0; text-align: center;">NOTA DE SERVIÇO </td>
+    </tr>
+    <tr>
+        <td colspan="3">Téc. Resp.: Eron E. V. de Andrade</td>
+        <td>CRO-TPD: 2924</td>
+        <td></td>
+        <td colspan="2" style="border: 1px solid; border-top: 0; text-align: center;">{{ fechamento.nota_de_servico }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">Av. Marechal Castelo Branco, Nº 701 – Centro, Paraíba do Sul, RJ</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td colspan="2">protese.lymage@gmail.com</td>
+        <td colspan="2">(24) 2263-1656 / 98848-1427</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    <tr>
+        <td style="text-align: right; border-top: 1px solid;">Cliente:</td>
+        <td colspan="6" style="text-align: left; border-top: 1px solid">{{ clinica.nome.upper }}</td>
+    </tr>
+    <tr>
+        <td style="text-align: right;">CNPJ:</td>
+        <td colspan="6" style="text-align: left;">{{ clinica.cnpj }}</td>
+    </tr>
+    <tr>
+        <td style="text-align: right;">TELEFONE:</td>
+        <td colspan="6" style="text-align: left;">{{ clinica.telefones }}</td>
+    </tr>
+    <tr>
+        <td style="text-align: right; border-bottom: 1px solid;">ENDEREÇO:</td>
+        <td colspan="6" style="text-align: left; border-bottom: 1px solid;">{{ clinica.endereco }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    {% for dentista, dic in grupos.items %}
+    <tr>
+        <td colspan="2" style="text-align: right; border-bottom: 1px solid; font-weight: bold;">DENTISTA:</td>
+        <td colspan="5" style="text-align: left; border-bottom: 1px solid; font-weight: bold;">{{ dentista.nome.upper }}
+        </td>
+    </tr>
+    <tr>
+        <th rowspan="2" style="text-align: center; border: 1px solid;">PACIENTE</th>
+        <th rowspan="2" style="text-align: center; border: 1px solid;">QUANT.</th>
+        <th rowspan="2" style="text-align: center; border: 1px solid;">CÓD.</th>
+        <th rowspan="2" style="text-align: center; border: 1px solid;">SERVIÇO</th>
+        <th rowspan="2" style="text-align: center; border: 1px solid;">ELEM.</th>
+        <th style="text-align: center; border: 1px solid; border-bottom: 0;">VALOR</th>
+        <th style="text-align: center; border: 1px solid; border-bottom: 0;">VALOR</th>
+    </tr>
+    <tr>
+        <th style="text-align: center; border: 1px solid; border-top: 0;">UNIT.</th>
+        <th style="text-align: center; border: 1px solid; border-top: 0;">TOTAL</th>
+    </tr>
+    {% for paciente, trabalhosp in dic.trabalhos.items %}
+
+    <tr>
+        <td style="text-align: center; border: 1px solid;" rowspan="{{ trabalhosp|length }}">
+            {{ paciente }}
+        </td>
+        {% for tr in trabalhosp %}
+        <td style="text-align: center; border: 1px solid;">{{ tr.quantidade }}</td>
+        <td style="text-align: center; border: 1px solid;">{{ tr.servico.id }}</td>
+        <td style="text-align: center; border: 1px solid;">{{ tr.servico.nome }}</td>
+        <td style="text-align: center; border: 1px solid;">{{ tr.elemento }}</td>
+        <td style="text-align: center; border: 1px solid;">R${{ tr.valor_unitario }}</td>
+        <td style="text-align: center; border: 1px solid;">R${{ tr.get_valor_total }}</td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-align: center; border: 1px solid;">SUBTOTAL:</td>
+        <td style="text-align: center; border: 1px solid;">R$ {{ dic.total }}</td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    {% endfor %}
+
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td colspan="2" style="border: 1px solid; text-align: center;">TOTAL DA NOTA:</td>
+        <td style="border: 1px solid; text-align: center;">R$ {{ fechamento.get_soma }}</td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    <tr>
+        <td colspan="7" style="border: 1px solid; text-align: center;">
+            VENCIMENTO DIA {{ fechamento.vencimento|date:"d/m/Y" }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>{{ clinica.nome }}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td colspan="3">Paraíba do Sul, {{ hoje }}</td>
+        <td>{{ clinica.contato.nome }}</td>
+        <td></td>
+        <td colspan="2" style="border: 1px solid; border-bottom: 0; text-align: center;">NOTA DE SERVIÇO</td>
+    </tr>
+    <tr>
+        <td colspan="5">Confirmo o recebimento da Nota Fiscal de Serviço indicada ao lado</td>
+        <td colspan="2" style="border: 1px solid; border-top: 0; text-align: center;">{{ fechamento.nota_de_servico }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="7" style="border-bottom: 1px solid;">Ass:</td>
+    </tr>
+    <tr>
+        <td colspan="7"><br /></td>
+    </tr>
+</table>
+<br />
+<button id="button"
+    onclick="getElementById('button').style.display='None';window.print();getElementById('button').style.display='block';return false;" />
+Imprimir
+</button>
