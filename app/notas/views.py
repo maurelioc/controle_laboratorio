@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.http import HttpResponseNotFound
 from django.shortcuts import render
 
 from .models import Fechamento, Trabalho
@@ -6,6 +7,8 @@ from .models import Fechamento, Trabalho
 
 def gera_nota(request, nota_de_servico):
     trabalhos = Trabalho.objects.filter(fechamento__nota_de_servico=nota_de_servico)
+    if len(trabalhos) == 0:
+        return HttpResponseNotFound("Nota não encontrada")   
     dentistas = sorted(list(set(t.cliente for t in trabalhos)), key=lambda x: x.nome)
     clinicas = [c for d in dentistas for c in d.get_clinicas()]
     clinica = max(set(clinicas), key=clinicas.count)
