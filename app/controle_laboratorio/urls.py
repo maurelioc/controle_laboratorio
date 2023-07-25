@@ -24,5 +24,5 @@ from notas import urls as notas_urls
 urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
     path('notas/', include(notas_urls)),
-    path('', RedirectView.as_view(pattern_name='admin', permanent=True)),
+    path('', RedirectView.as_view(url='admin/', permanent=True)),
 ]
