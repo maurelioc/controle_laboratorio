@@ -19,4 +19,8 @@ from django.urls import include, path
 
 from notas import urls as notas_urls
 
-urlpatterns = [path('admin/', admin.site.urls), path('notas/', include(notas_urls))]
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('notas/', include(notas_urls)),
+    path('/', admin.site.urls),
+]
