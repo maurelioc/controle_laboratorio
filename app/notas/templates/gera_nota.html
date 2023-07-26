@@ -3,35 +3,35 @@
 
 <table style="border: 1px solid; padding: 5px; border-collapse:collapse;" cellspacing="0">
     <tr>
-        <td colspan="2">Laboratório de Prótese Dentária </td>
+        <td colspan="2">{{ config.LAB_NAME }}</td>
         <td></td>
         <td></td>
         <td></td>
         <td colspan="2" style="border: 1px solid; text-align: center;">EMISSÃO {{ hoje|date:"d/m/Y" }}</td>
     </tr>
     <tr>
-        <td colspan="2">CNPJ: 22.383.698/0001-04 </td>
+        <td colspan="2">CNPJ: {{ config.LAB_CNPJ }}</td>
         <td></td>
         <td></td>
         <td></td>
         <td colspan="2" style="border: 1px solid; border-bottom: 0; text-align: center;">NOTA DE SERVIÇO </td>
     </tr>
     <tr>
-        <td colspan="3">Téc. Resp.: Eron E. V. de Andrade</td>
-        <td>CRO-TPD: 2924</td>
+        <td colspan="3">Téc. Resp.: {{ config.LAB_RESP_NAME }}</td>
+        <td>CRO-TPD: {{ config.LAB_RESP_CRO_TPD }}</td>
         <td></td>
         <td colspan="2" style="border: 1px solid; border-top: 0; text-align: center;">{{ fechamento.nota_de_servico }}
         </td>
     </tr>
     <tr>
-        <td colspan="4">Av. Marechal Castelo Branco, Nº 701 – Centro, Paraíba do Sul, RJ</td>
+        <td colspan="4">{{ config.LAB_ADDRESS }}</td>
         <td></td>
         <td></td>
         <td></td>
     </tr>
     <tr>
-        <td colspan="2">protese.lymage@gmail.com</td>
-        <td colspan="2">(24) 2263-1656 / 98848-1427</td>
+        <td colspan="2">{{ config.LAB_EMAIL }}</td>
+        <td colspan="2">{{ config.LAB_PHONES }}</td>
         <td></td>
         <td></td>
         <td></td>
@@ -152,7 +152,7 @@
         <td></td>
     </tr>
     <tr>
-        <td colspan="3">Paraíba do Sul, {{ hoje }}</td>
+        <td colspan="3">{{ config.LAB_CITY }}, {{ hoje }}</td>
         <td>{{ clinica.contato.nome }}</td>
         <td></td>
         <td colspan="2" style="border: 1px solid; border-bottom: 0; text-align: center;">NOTA DE SERVIÇO</td>
