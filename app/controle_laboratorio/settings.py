@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_admin_conf_vars',
     'notas',
 ]
 
@@ -123,3 +124,6 @@ STATIC_ROOT = '/var/www/static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+VARS_MODULE_PATH = 'controle_laboratorio.var_settings'
