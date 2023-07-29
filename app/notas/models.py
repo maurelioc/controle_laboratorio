@@ -3,6 +3,7 @@ from re import T
 from tabnanny import verbose
 from django.db import models
 
+
 # Create your models here.
 class Servico(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -61,8 +62,8 @@ class Fechamento(models.Model):
 
 class Cliente(models.Model):
     nome = models.CharField(max_length=200)
-    cro = models.CharField(max_length=50)
-    cpf = models.CharField(max_length=20)
+    cro = models.CharField(max_length=50, null=True, blank=True)
+    cpf = models.CharField(max_length=20, null=True, blank=True)
     telefones = models.CharField(max_length=50)
 
     clinicas = models.ManyToManyField('Clinica', through='Clinica_Dentista')
@@ -86,6 +87,7 @@ class Clinica_Dentista(models.Model):
     def __str__(self):
         return f'{self.clinica.nome} - {self.cliente.nome}'
 
+
 class Clinica(models.Model):
     nome = models.CharField(max_length=200)
     cnpj = models.CharField(max_length=50)
@@ -93,7 +95,13 @@ class Clinica(models.Model):
     insc_municipal = models.CharField(max_length=50, null=True, blank=True)
     endereco = models.CharField(max_length=200)
     telefones = models.CharField(max_length=50)
-    contato = models.ForeignKey('Cliente', on_delete=models.PROTECT, related_name='contato_da_clinica', null=True, blank=True)
+    contato = models.ForeignKey(
+        'Cliente',
+        on_delete=models.PROTECT,
+        related_name='contato_da_clinica',
+        null=True,
+        blank=True,
+    )
     email = models.EmailField(max_length=50, null=True, blank=True)
 
     clientes = models.ManyToManyField('Cliente', through='Clinica_Dentista')
