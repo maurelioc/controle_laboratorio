@@ -1,8 +1,17 @@
+from django import forms
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 
-from notas.models import Servico, Trabalho, Fechamento, Cliente, Clinica, Clinica_Dentista
+from notas.models import (
+    Servico,
+    Trabalho,
+    Fechamento,
+    Cliente,
+    Clinica,
+    Clinica_Dentista,
+)
+
 
 # Register your models here.
 class ServicoAdmin(admin.ModelAdmin):
@@ -37,10 +46,7 @@ class ClinicaListFilter(admin.SimpleListFilter):
     parameter_name = 'clinica'
 
     def lookups(self, request, model_admin):
-        return (
-            (c.id, c.nome)
-            for c in Clinica.objects.all()
-        )
+        return ((c.id, c.nome) for c in Clinica.objects.all())
 
     def queryset(self, request, queryset):
         if self.value():
@@ -48,12 +54,13 @@ class ClinicaListFilter(admin.SimpleListFilter):
         else:
             return queryset.all()
 
+
 @admin.action(description='Fechar nota')
 def gera_fechamento(modeladmin, request, queryset):
     fechamento = Fechamento()
     if Fechamento.objects.count() > 0:
         fechamento.nota_de_servico = (
-            (max(f.nota_de_servico for f in Fechamento.objects.all()) + 1)
+            max(f.nota_de_servico for f in Fechamento.objects.all()) + 1
         )
     else:
         fechamento.nota_de_servico = 1
@@ -62,6 +69,12 @@ def gera_fechamento(modeladmin, request, queryset):
 
 
 class TrabalhoAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = ('fechamento',)
+        form = super(TrabalhoAdmin, self).get_form(request, obj, **kwargs)
+
+        return form
+
     def link_fechamento(self, trabalho):
         if trabalho.fechamento:
             url = reverse(
@@ -80,7 +93,6 @@ class TrabalhoAdmin(admin.ModelAdmin):
         )
         link = f'<a href="{url}">{trabalho.cliente.nome}</a>'
         return mark_safe(link)
-
 
     def ultima_atualizacao(self, trabalho):
         if not trabalho.entrega is None:
@@ -238,8 +250,11 @@ class ClienteAdmin(admin.ModelAdmin):
             links.append(link)
         return mark_safe(', '.join(links))
 
-    def clinica_endereco(self, cliente):        
-        return ', '.join(c.endereco for c in Clinica.objects.filter(clientes__nome__contains=cliente.nome))
+    def clinica_endereco(self, cliente):
+        return ', '.join(
+            c.endereco
+            for c in Clinica.objects.filter(clientes__nome__contains=cliente.nome)
+        )
 
 
 class ClinicaAdmin(admin.ModelAdmin):
