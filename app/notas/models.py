@@ -18,7 +18,7 @@ class Servico(models.Model):
 
 
 class Trabalho(models.Model):
-    cliente = models.ForeignKey('Cliente', on_delete=models.PROTECT)
+    cliente = models.ForeignKey('Clinica_Dentista', on_delete=models.PROTECT)
     paciente = models.CharField(max_length=200)
     servico = models.ForeignKey(Servico, on_delete=models.PROTECT)
     quantidade = models.IntegerField()

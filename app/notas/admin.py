@@ -1,5 +1,4 @@
-from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 
@@ -57,6 +56,14 @@ class ClinicaListFilter(admin.SimpleListFilter):
 
 @admin.action(description='Fechar nota')
 def gera_fechamento(modeladmin, request, queryset):
+    clinicas = [t.cliente.clinica for t in queryset]
+    if len(set(clinicas)) > 1:
+        modeladmin.message_user(
+            request=request,
+            message='Não é possível gerar um fechamento para várias clinicas.',
+            level=messages.ERROR,
+        )
+        return
     fechamento = Fechamento()
     if Fechamento.objects.count() > 0:
         fechamento.nota_de_servico = (
@@ -88,10 +95,10 @@ class TrabalhoAdmin(admin.ModelAdmin):
 
     def link_cliente(self, trabalho):
         url = reverse(
-            "admin:notas_cliente_change",
+            "admin:notas_clinica_dentista_change",
             args=[trabalho.cliente.id],
         )
-        link = f'<a href="{url}">{trabalho.cliente.nome}</a>'
+        link = f'<a href="{url}">{trabalho.cliente}</a>'
         return mark_safe(link)
 
     def ultima_atualizacao(self, trabalho):
