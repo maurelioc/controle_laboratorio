@@ -11,8 +11,10 @@ def gera_nota(request, nota_de_servico):
     trabalhos = Trabalho.objects.filter(fechamento__nota_de_servico=nota_de_servico)
     if len(trabalhos) == 0:
         return HttpResponseNotFound("Nota não encontrada")
-    dentistas = sorted(list(set(t.cliente for t in trabalhos)), key=lambda x: x.nome)
-    clinicas = [c for d in dentistas for c in d.get_clinicas()]
+    dentistas = sorted(
+        list(set(t.cliente.cliente for t in trabalhos)), key=lambda x: x.nome
+    )
+    clinicas = [t.cliente.clinica for t in trabalhos]
     clinica = max(set(clinicas), key=clinicas.count)
     context = {
         'grupos': {
@@ -20,16 +22,20 @@ def gera_nota(request, nota_de_servico):
                 'trabalhos': {
                     paciente: [
                         t
-                        for t in trabalhos.filter(cliente=dentista).filter(
+                        for t in trabalhos.filter(cliente__cliente=dentista).filter(
                             paciente=paciente
                         )
                     ]
                     for paciente in (
-                        set(t.paciente for t in trabalhos.filter(cliente=dentista))
+                        set(
+                            t.paciente
+                            for t in trabalhos.filter(cliente__cliente=dentista)
+                        )
                     )
                 },
                 'total': sum(
-                    t.get_valor_total() for t in trabalhos.filter(cliente=dentista)
+                    t.get_valor_total()
+                    for t in trabalhos.filter(cliente__cliente=dentista)
                 ),
             }
             for dentista in dentistas
