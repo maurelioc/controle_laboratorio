@@ -89,7 +89,7 @@
         <td style="text-align: center; border: 1px solid;">{{ tr.servico.id }}</td>
         <td style="text-align: center; border: 1px solid;">{{ tr.servico.nome }}</td>
         <td style="text-align: center; border: 1px solid;">{{ tr.elemento }}</td>
-        <td style="text-align: center; border: 1px solid;">R${{ tr.valor_unitario }}</td>
+        <td style="text-align: center; border: 1px solid;">R${{ tr.servico.valor_unitario }}</td>
         <td style="text-align: center; border: 1px solid;">R${{ tr.get_valor_total }}</td>
     </tr>
     {% endfor %}

@@ -8,13 +8,14 @@ from django.db import models
 class Servico(models.Model):
     id = models.IntegerField(primary_key=True)
     nome = models.CharField(max_length=200)
+    valor_unitario = models.DecimalField(decimal_places=2, max_digits=20)
 
     class Meta:
         verbose_name = 'Serviço'
         verbose_name_plural = 'Serviços'
 
     def __str__(self):
-        return f'{self.id} - {self.nome}'
+        return f'{self.id} - {self.nome} - {self.valor_unitario}'
 
 
 class Trabalho(models.Model):
@@ -33,13 +34,12 @@ class Trabalho(models.Model):
     retorno_3a_prova = models.DateField(null=True, blank=True)
     entrega = models.DateField(null=True, blank=True)
 
-    valor_unitario = models.DecimalField(decimal_places=2, max_digits=20)
     fechamento = models.ForeignKey(
         'Fechamento', null=True, blank=True, on_delete=models.SET_NULL
     )
 
     def get_valor_total(self):
-        return self.valor_unitario * self.quantidade
+        return self.servico.valor_unitario * self.quantidade
 
     def __str__(self):
         return f'{self.cliente} - {self.paciente} - {self.servico}'
