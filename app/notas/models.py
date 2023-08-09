@@ -84,6 +84,7 @@ class Clinica_Dentista(models.Model):
     class Meta:
         verbose_name = 'Relação Dentista-Clínica'
         verbose_name_plural = 'Relações Dentista-Clínica'
+        unique_together = [['cliente', 'clinica']]
 
     def __str__(self):
         return f'{self.clinica.nome} - {self.cliente.nome}'
