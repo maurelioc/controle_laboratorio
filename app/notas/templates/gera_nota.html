@@ -1,12 +1,12 @@
 {% csrf_token %}
+{% load static %}
 
-
-<table style="border: 1px solid; padding: 5px; border-collapse:collapse;" cellspacing="0">
+<table style="border: 1px solid; border-collapse:collapse;" cellspacing="0">
     <tr>
-        <td colspan="2">{{ config.LAB_NAME }}</td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td rowspan="2" style="vertical-align: middle;">
+            <img src="{% static 'notas/logo.jpeg' %}" alt="Logo" style="max-height: 50px;">
+        </td>
+        <td colspan="5"><span>{{ config.LAB_NAME }}</span></td>
         <td colspan="2" style="border: 1px solid; text-align: center;">EMISSÃO {{ hoje|date:"d/m/Y" }}</td>
     </tr>
     <!-- <tr>
@@ -35,9 +35,6 @@
         <td></td>
         <td></td>
         <td></td>
-    </tr>
-    <tr>
-        <td colspan="7"><br /></td>
     </tr>
     <tr>
         <td style="text-align: right; border-top: 1px solid;">Cliente:</td>
