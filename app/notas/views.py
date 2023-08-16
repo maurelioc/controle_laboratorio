@@ -34,12 +34,14 @@ def gera_nota(request, nota_de_servico):
                     )
                 },
                 'total': sum(
-                    t.get_valor_total()
+                    t.get_valor_parcial()
                     for t in trabalhos.filter(cliente__cliente=dentista)
                 ),
             }
             for dentista in dentistas
         },
+        'desconto': sum(t.desconto for t in trabalhos),
+        'taxa_urgencia': sum(t.taxa_urgencia for t in trabalhos),
         'clinica': clinica,
         'hoje': datetime.now().date,
         'fechamento': Fechamento.objects.filter(nota_de_servico=nota_de_servico)[0],
