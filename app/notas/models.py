@@ -35,12 +35,19 @@ class Trabalho(models.Model):
     retorno_3a_prova = models.DateField(null=True, blank=True)
     entrega = models.DateField(null=True, blank=True)
 
+    desconto = models.DecimalField(decimal_places=2, default=0, max_digits=20)
+    taxa_urgencia = models.DecimalField(decimal_places=2, default=0, max_digits=20)
+
     fechamento = models.ForeignKey(
         'Fechamento', null=True, blank=True, on_delete=models.SET_NULL
     )
 
-    def get_valor_total(self):
+    def get_valor_parcial(self):
         return self.servico.valor_unitario * self.quantidade
+
+    def get_valor_total(self):
+        valor_parcial = self.get_valor_parcial() + self.taxa_urgencia - self.desconto
+        return max([valor_parcial, 0])
 
     def __str__(self):
         return f'{self.cliente} - {self.paciente} - {self.servico}'

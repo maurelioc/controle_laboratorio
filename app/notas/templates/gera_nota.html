@@ -87,16 +87,12 @@
         <td style="text-align: center; border: 1px solid;">{{ tr.servico.nome }}</td>
         <td style="text-align: center; border: 1px solid;">{{ tr.elemento }}</td>
         <td style="text-align: center; border: 1px solid;">R${{ tr.servico.valor_unitario }}</td>
-        <td style="text-align: center; border: 1px solid;">R${{ tr.get_valor_total }}</td>
+        <td style="text-align: center; border: 1px solid;">R${{ tr.get_valor_parcial }}</td>
     </tr>
     {% endfor %}
     {% endfor %}
     <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td colspan="5"></td>
         <td style="text-align: center; border: 1px solid;">SUBTOTAL:</td>
         <td style="text-align: center; border: 1px solid;">R$ {{ dic.total }}</td>
     </tr>
@@ -104,12 +100,22 @@
         <td colspan="7"><br /></td>
     </tr>
     {% endfor %}
-
+    {% if desconto > 0 %}
     <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td colspan="4"></td>
+        <td colspan="2" style="border: 1px solid; text-align: center;">DESCONTO:</td>
+        <td style="border: 1px solid; text-align: center;">R$ {{ desconto }}</td>
+    </tr>
+    {% endif %}
+    {% if taxa_urgencia > 0 %}
+    <tr>
+        <td colspan="4"></td>
+        <td colspan="2" style="border: 1px solid; text-align: center;">TAXA DE URGÊNCIA:</td>
+        <td style="border: 1px solid; text-align: center;">R$ {{ taxa_urgencia }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td colspan="4"></td>
         <td colspan="2" style="border: 1px solid; text-align: center;">TOTAL DA NOTA:</td>
         <td style="border: 1px solid; text-align: center;">R$ {{ fechamento.get_soma }}</td>
     </tr>
