@@ -64,6 +64,19 @@ def gera_fechamento(modeladmin, request, queryset):
             level=messages.ERROR,
         )
         return
+    clinica = clinicas[0]
+    if sum(t.get_valor_total() for t in queryset) >= clinica.limite_credito - sum(
+        t.get_valor_total()
+        for t in Trabalho.objects.filter(cliente__clinica=clinica)
+        .filter(fechamento__isnull=False)
+        .filter(fechamento__data_pagamento__isnull=True)
+    ):
+        modeladmin.message_user(
+            request=request,
+            message='Essa clínica tem mais notas em aberto que o seu limite de crédito.',
+            level=messages.ERROR,
+        )
+        return
     fechamento = Fechamento()
     if Fechamento.objects.count() > 0:
         fechamento.nota_de_servico = (
