@@ -113,6 +113,10 @@ class Clinica(models.Model):
     )
     email = models.EmailField(max_length=50, null=True, blank=True)
 
+    limite_credito = models.DecimalField(
+        decimal_places=2, max_digits=20, default=999999
+    )
+
     clientes = models.ManyToManyField('Cliente', through='Clinica_Dentista')
 
     def get_clientes(self):
