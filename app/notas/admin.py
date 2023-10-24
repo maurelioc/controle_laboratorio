@@ -138,7 +138,12 @@ class TrabalhoAdmin(admin.ModelAdmin):
     def trabalho_id(self, trabalho):
         return f'Trabalho {trabalho.id}'
 
-    search_fields = ['servico__nome', 'cliente__nome']
+    search_fields = [
+        'servico__nome',
+        'cliente__cliente__nome',
+        'cliente__clinica__nome',
+        'paciente',
+    ]
     list_display = [
         'trabalho_id',
         'link_cliente',
