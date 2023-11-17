@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 
@@ -14,53 +15,77 @@ from notas.models import (
 
 # Register your models here.
 class ServicoAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nome']
-    search_fields = ['id', 'nome']
-    ordering = ['id']
+    list_display = ["id", "nome"]
+    search_fields = ["id", "nome"]
+    ordering = ["id"]
 
 
 class EntregueListFilter(admin.SimpleListFilter):
-    title = 'entregue'
+    title = "entregue"
 
-    parameter_name = 'entregue'
+    parameter_name = "entregue"
 
     def lookups(self, request, model_admin):
         return (
-            ('Sim', 'Sim'),
-            ('Não', 'Não'),
+            ("Sim", "Sim"),
+            ("Não", "Não"),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'Não':
+        if self.value() == "Não":
             return queryset.filter(entrega=None)
-        elif self.value() == 'Sim':
+        elif self.value() == "Sim":
             return queryset.exclude(entrega=None)
         else:
             return queryset.all()
 
 
-class ClinicaListFilter(admin.SimpleListFilter):
-    title = 'clínica'
+class PagoListFilter(admin.SimpleListFilter):
+    title = "pago"
 
-    parameter_name = 'clinica'
+    parameter_name = "pago"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("Sim", "Sim"),
+            ("Não", "Não"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "Não":
+            return queryset.filter(
+                Q(fechamento__data_pagamento=None) | Q(fechamento=None)
+            )
+        elif self.value() == "Sim":
+            return queryset.exclude(
+                Q(fechamento__data_pagamento=None) | Q(fechamento=None)
+            )
+        else:
+            return queryset.all()
+
+
+class ClinicaListFilter(admin.SimpleListFilter):
+    title = "clínica"
+
+    parameter_name = "clinica"
 
     def lookups(self, request, model_admin):
         return ((c.id, c.nome) for c in Clinica.objects.all())
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(cliente__clinicas__id__contains=self.value())
+            return queryset.filter(cliente__clinica__id=self.value())
         else:
             return queryset.all()
 
 
-@admin.action(description='Fechar nota')
+@admin.action(description="Fechar nota")
 def gera_fechamento(modeladmin, request, queryset):
     clinicas = [t.cliente.clinica for t in queryset]
     if len(set(clinicas)) > 1:
         modeladmin.message_user(
             request=request,
-            message='Não é possível gerar um fechamento para várias clinicas.',
+            message="Não é possível gerar um fechamento para várias clinicas.",
             level=messages.ERROR,
         )
         return
@@ -73,7 +98,7 @@ def gera_fechamento(modeladmin, request, queryset):
     ):
         modeladmin.message_user(
             request=request,
-            message='Essa clínica tem mais notas em aberto que o seu limite de crédito.',
+            message="Essa clínica tem mais notas em aberto que o seu limite de crédito.",
             level=messages.ERROR,
         )
         return
@@ -90,7 +115,7 @@ def gera_fechamento(modeladmin, request, queryset):
 
 class TrabalhoAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
-        self.exclude = ('fechamento',)
+        self.exclude = ("fechamento",)
         form = super(TrabalhoAdmin, self).get_form(request, obj, **kwargs)
 
         return form
@@ -104,7 +129,7 @@ class TrabalhoAdmin(admin.ModelAdmin):
             link = f'<a href="{url}">{trabalho.fechamento}</a>'
             return mark_safe(link)
         else:
-            return '-'
+            return "-"
 
     def link_cliente(self, trabalho):
         url = reverse(
@@ -116,76 +141,83 @@ class TrabalhoAdmin(admin.ModelAdmin):
 
     def ultima_atualizacao(self, trabalho):
         if not trabalho.entrega is None:
-            return f'Entrega: {trabalho.entrega}'
+            return f"Entrega: {trabalho.entrega}"
         elif not trabalho.retorno_3a_prova is None:
-            return f'Retorno 3ª Prova: {trabalho.retorno_3a_prova}'
+            return f"Retorno 3ª Prova: {trabalho.retorno_3a_prova}"
         elif not trabalho.saida_3a_prova is None:
-            return f'Saída 3ª Prova: {trabalho.saida_3a_prova}'
+            return f"Saída 3ª Prova: {trabalho.saida_3a_prova}"
         elif not trabalho.retorno_2a_prova is None:
-            return f'Retorno 2ª Prova: {trabalho.retorno_2a_prova}'
+            return f"Retorno 2ª Prova: {trabalho.retorno_2a_prova}"
         elif not trabalho.saida_2a_prova is None:
-            return f'Saída 2ª Prova: {trabalho.saida_2a_prova}'
+            return f"Saída 2ª Prova: {trabalho.saida_2a_prova}"
         elif not trabalho.retorno_1a_prova is None:
-            return f'Retorno 1ª Prova: {trabalho.retorno_1a_prova}'
+            return f"Retorno 1ª Prova: {trabalho.retorno_1a_prova}"
         elif not trabalho.saida_1a_prova is None:
-            return f'Saída 1ª Prova: {trabalho.saida_1a_prova}'
+            return f"Saída 1ª Prova: {trabalho.saida_1a_prova}"
         else:
-            return 'Sem entregas'
+            return "Sem entregas"
 
     def valor(self, trabalho):
         return trabalho.get_valor_total()
 
     def trabalho_id(self, trabalho):
-        return f'Trabalho {trabalho.id}'
+        return f"Trabalho {trabalho.id}"
 
     search_fields = [
-        'servico__nome',
-        'cliente__cliente__nome',
-        'cliente__clinica__nome',
-        'paciente',
+        "servico__nome",
+        "cliente__cliente__nome",
+        "cliente__clinica__nome",
+        "paciente",
     ]
     list_display = [
-        'trabalho_id',
-        'link_cliente',
-        'link_fechamento',
-        'paciente',
-        'servico',
-        'quantidade',
-        'elemento',
-        'entrada',
-        'observacoes',
-        'ultima_atualizacao',
-        'valor',
+        "trabalho_id",
+        "link_cliente",
+        "link_fechamento",
+        "paciente",
+        "servico",
+        "quantidade",
+        "elemento",
+        "entrada",
+        "observacoes",
+        "ultima_atualizacao",
+        "valor",
     ]
-    list_filter = [EntregueListFilter, 'cliente', ClinicaListFilter, 'servico']
+    list_filter = [
+        EntregueListFilter,
+        PagoListFilter,
+        "cliente",
+        ClinicaListFilter,
+        "servico",
+    ]
     actions = [gera_fechamento]
-    date_hierarchy = 'entrada'
+    date_hierarchy = "entrada"
+    list_per_page = 10
 
 
 class PagoListFilter(admin.SimpleListFilter):
-    title = 'pago'
+    title = "pago"
 
-    parameter_name = 'pago'
+    parameter_name = "pago"
 
     def lookups(self, request, model_admin):
         return (
-            ('Sim', 'Sim'),
-            ('Não', 'Não'),
+            ("Sim", "Sim"),
+            ("Não", "Não"),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'Não':
+        if self.value() == "Não":
             return queryset.filter(data_pagamento=None)
-        elif self.value() == 'Sim':
+        elif self.value() == "Sim":
             return queryset.exclude(data_pagamento=None)
         else:
             return queryset.all()
 
 
 class ClienteListFilter(admin.SimpleListFilter):
-    title = 'cliente'
+    title = "cliente"
 
-    parameter_name = 'cliente'
+    parameter_name = "cliente"
 
     def lookups(self, request, model_admin):
         return ((c.nome, c.nome) for c in Cliente.objects.all())
@@ -201,9 +233,9 @@ class ClienteListFilter(admin.SimpleListFilter):
 
 
 class ClinicaListFilter(admin.SimpleListFilter):
-    title = 'clínica'
+    title = "clínica"
 
-    parameter_name = 'clinica'
+    parameter_name = "clinica"
 
     def lookups(self, request, model_admin):
         return ((c.nome, c.nome) for c in Clinica.objects.all())
@@ -220,20 +252,20 @@ class ClinicaListFilter(admin.SimpleListFilter):
 
 class FechamentoAdmin(admin.ModelAdmin):
     search_fields = [
-        'nota_de_servico',
-        'trabalho__cliente__nome',
-        'trabalho__cliente__clinicas__nome',
+        "nota_de_servico",
+        "trabalho__cliente__nome",
+        "trabalho__cliente__clinicas__nome",
     ]
     list_display = [
-        'nota_de_servico',
-        'trabalhos',
-        'valor_total',
-        'vencimento',
-        'data_pagamento',
-        'gera_nota',
+        "nota_de_servico",
+        "trabalhos",
+        "valor_total",
+        "vencimento",
+        "data_pagamento",
+        "gera_nota",
     ]
     list_filter = [PagoListFilter, ClinicaListFilter, ClienteListFilter]
-    date_hierarchy = 'vencimento'
+    date_hierarchy = "vencimento"
 
     def valor_total(self, fechamento):
         return fechamento.get_soma()
@@ -248,7 +280,7 @@ class FechamentoAdmin(admin.ModelAdmin):
             )
             link = f'<a href="{url}">{trabalho}</a>'
             links.append(link)
-        return mark_safe(', '.join(links))
+        return mark_safe(", ".join(links))
 
     def gera_nota(self, fechamento):
         url = reverse(
@@ -260,8 +292,8 @@ class FechamentoAdmin(admin.ModelAdmin):
 
 
 class ClienteAdmin(admin.ModelAdmin):
-    search_fields = ['nome', 'clinicas__nome']
-    list_display = ['nome', 'clinica_link', 'clinica_endereco', 'telefones']
+    search_fields = ["nome", "clinicas__nome"]
+    list_display = ["nome", "clinica_link", "clinica_endereco", "telefones"]
 
     def clinica_link(self, cliente):
         clinicas = Clinica.objects.filter(clientes__nome__contains=cliente.nome)
@@ -273,18 +305,18 @@ class ClienteAdmin(admin.ModelAdmin):
             )
             link = f'<a href="{url}">{clinica.nome}</a>'
             links.append(link)
-        return mark_safe(', '.join(links))
+        return mark_safe(", ".join(links))
 
     def clinica_endereco(self, cliente):
-        return ', '.join(
+        return ", ".join(
             c.endereco
             for c in Clinica.objects.filter(clientes__nome__contains=cliente.nome)
         )
 
 
 class ClinicaAdmin(admin.ModelAdmin):
-    search_fields = ['nome', 'clientes__nome']
-    list_display = ['nome', 'dentistas', 'endereco', 'telefones']
+    search_fields = ["nome", "clientes__nome"]
+    list_display = ["nome", "dentistas", "endereco", "telefones"]
 
     def dentistas(self, clinica):
         clientes = clinica.get_clientes()
@@ -296,7 +328,7 @@ class ClinicaAdmin(admin.ModelAdmin):
             )
             link = f'<a href="{url}">{cliente.nome}</a>'
             links.append(link)
-        return mark_safe(', '.join(links))
+        return mark_safe(", ".join(links))
 
 
 class ClinicaDentistaAdmin(admin.ModelAdmin):
@@ -310,4 +342,4 @@ admin.site.register(Cliente, ClienteAdmin)
 admin.site.register(Clinica_Dentista, ClinicaDentistaAdmin)
 admin.site.register(Clinica, ClinicaAdmin)
 
-admin.site.site_header = 'Controle do Laboratório'
+admin.site.site_header = "Controle do Laboratório"
